@@ -1,0 +1,36 @@
+@startuml
+title Диаграмма классов: Список дел
+
+class Task {
+  +title: str
+  +deadline: str
+  +done: bool
+  +mark_done()
+  +__str__(): str
+}
+
+class TaskManager {
+  -tasks: list[Task]
+  +add_task(task: Task)
+  +remove_task(title: str)
+  +get_all(): list[Task]
+  +find_by_title(title: str): Task
+}
+
+class TaskStorage {
+  -filename: str
+  +load(): list[Task]
+  +save(tasks: list[Task])
+}
+
+class ConsoleUI {
+  -manager: TaskManager
+  +run()
+  +print_menu()
+  +print_tasks(tasks: list[Task])
+}
+
+ConsoleUI --> TaskManager
+TaskManager "1" o-- "0..*" Task
+TaskManager ..> TaskStorage
+@enduml
