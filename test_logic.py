@@ -14,6 +14,17 @@ class TestTask(unittest.TestCase):
         task = Task("Сдать отчёт", "2026-11-12", done=True)
         self.assertTrue(task.done)
 
+    def test_mark_done(self):
+        task = Task("Сдать отчёт", "2026-11-12")
+        task.mark_done()
+        self.assertTrue(task.done)
+
+    def test_str(self):
+        task = Task("Сдать отчёт", "2026-11-12")
+        self.assertEqual(str(task), "Сдать отчёт (до 2026-11-12) — не выполнено")
+        task.mark_done()
+        self.assertEqual(str(task), "Сдать отчёт (до 2026-11-12) — выполнено")
+
 
 if __name__ == "__main__":
     unittest.main()
