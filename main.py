@@ -1,10 +1,7 @@
-"""Точка входа приложения «Список дел»."""
-from ui import print_menu
+from ui import ConsoleUI
+from logic import TaskManager
 
 
 def main():
-    print_menu()
-
-
-if __name__ == "__main__":
-    main()
+    manager = TaskManager()
+    ui = ConsoleUI(manager)
