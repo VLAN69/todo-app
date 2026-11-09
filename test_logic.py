@@ -69,6 +69,18 @@ class TestTaskManager(unittest.TestCase):
         m.get_all().clear()
         self.assertEqual(m.count(), 1)
 
+    def test_find_by_title(self):
+        m = TaskManager()
+        m.add_task("Купить хлеб", "2025-11-01")
+        m.add_task("Полить цветы", "2025-11-03")
+        found = m.find_by_title("ХЛЕБ")
+        self.assertEqual([t.title for t in found], ["Купить хлеб"])
+
+    def test_find_by_title_nothing(self):
+        m = TaskManager()
+        m.add_task("Купить хлеб", "2025-11-01")
+        self.assertEqual(m.find_by_title("кофе"), [])
+
 
 if __name__ == "__main__":
     unittest.main()

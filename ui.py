@@ -19,6 +19,8 @@ class ConsoleUI:
                 self.remove_flow()
             elif choice == "5":
                 self.show_pending()
+            elif choice == "6":
+                self.search_flow()
             elif choice == "0":
                 break
             else:
@@ -31,6 +33,7 @@ class ConsoleUI:
         print("3. Отметить выполненным")
         print("4. Удалить дело")
         print("5. Показать только невыполненные")
+        print("6. Найти дело по названию")
         print("0. Выход")
 
     def add_flow(self):
@@ -70,4 +73,12 @@ class ConsoleUI:
         if not tasks:
             print("Невыполненных дел нет")
         for task in tasks:
+            print(task)
+
+    def search_flow(self):
+        fragment = input("Часть названия: ").strip()
+        found = self.manager.find_by_title(fragment)
+        if not found:
+            print("Ничего не найдено")
+        for task in found:
             print(task)
