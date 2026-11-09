@@ -17,6 +17,8 @@ class ConsoleUI:
                 self.mark_flow()
             elif choice == "4":
                 self.remove_flow()
+            elif choice == "5":
+                self.show_pending()
             elif choice == "0":
                 break
             else:
@@ -28,6 +30,7 @@ class ConsoleUI:
         print("2. Показать все дела")
         print("3. Отметить выполненным")
         print("4. Удалить дело")
+        print("5. Показать только невыполненные")
         print("0. Выход")
 
     def add_flow(self):
@@ -59,5 +62,12 @@ class ConsoleUI:
         tasks = self.manager.get_all()
         if not tasks:
             print("Список пуст")
+        for task in tasks:
+            print(task)
+
+    def show_pending(self):
+        tasks = self.manager.get_pending()
+        if not tasks:
+            print("Невыполненных дел нет")
         for task in tasks:
             print(task)
