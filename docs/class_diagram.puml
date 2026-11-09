@@ -11,10 +11,13 @@ class Task {
 
 class TaskManager {
   -tasks: list[Task]
-  +add_task(task: Task)
+  +add_task(title: str, deadline: str): Task
   +remove_task(title: str)
+  +mark_done(title: str)
   +get_all(): list[Task]
-  +find_by_title(title: str): Task
+  +get_pending(): list[Task]
+  +count(): int
+  +find_by_title(fragment: str): list[Task]
 }
 
 class TaskStorage {
@@ -27,7 +30,12 @@ class ConsoleUI {
   -manager: TaskManager
   +run()
   +print_menu()
-  +print_tasks(tasks: list[Task])
+  +add_flow()
+  +mark_flow()
+  +remove_flow()
+  +show_all()
+  +show_pending()
+  +search_flow()
 }
 
 ConsoleUI --> TaskManager
