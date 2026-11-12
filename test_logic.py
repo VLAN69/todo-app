@@ -6,6 +6,11 @@ class TestTask(unittest.TestCase):
     def test_default_not_done(self):
         task = Task("Дело", "2025-11-01")
         self.assertFalse(task.done)
+    def test_empty_and_blank_titles_raise(self):
+        for bad in ["", "   ", "\t\n", " \t "]:
+            with self.subTest(title=repr(bad)):
+                with self.assertRaises(ValueError):
+                    Task(bad, "2025-11-01")
 
     def test_mark_done(self):
         task = Task("Дело", "2025-11-01")
