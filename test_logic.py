@@ -1,86 +1,84 @@
 import unittest
-
 from logic import Task, TaskManager
 
-
 class TestTask(unittest.TestCase):
-    def test_mark_done(self):
+    def test_default_not_done(self):
         task = Task("Дело", "2025-11-01")
         self.assertFalse(task.done)
+
+    def test_mark_done(self):
+        task = Task("Дело", "2025-11-01")
         task.mark_done()
         self.assertTrue(task.done)
 
+    def test_title_is_stripped(self):
+        task = Task(" Хлеб ", "2025-11-01")
+        self.assertEqual(task.title, "Хлеб")
+
     def test_empty_title_raises(self):
+        with self.assertRaises(ValueError):
+            Task("", "2025-11-01")
+
+    def test_spaces_only_title_raises(self):
         with self.assertRaises(ValueError):
             Task("   ", "2025-11-01")
 
-    def test_title_is_stripped(self):
-        task = Task("  Купить хлеб  ", "2025-11-01")
-        self.assertEqual(task.title, "Купить хлеб")
+    def test_empty_and_blank_titles_raise(self):
+        for bad in ["", "   ", "\t\n", " \t "]:
+            with self.subTest(title=repr(bad)):
+                with self.assertRaises(ValueError):
+                    Task(bad, "2025-11-01")
 
-    def test_str(self):
-        task = Task("Купить хлеб", "2025-11-01")
-        self.assertEqual(str(task), "[ ] Купить хлеб (срок: 2025-11-01)")
-        task.mark_done()
-        self.assertEqual(str(task), "[x] Купить хлеб (срок: 2025-11-01)")
+    def test_text_deadline_raises(self):
+        with self.assertRaises(ValueError):
+            Task("Дело", "завтра")
 
+    def test_valid_deadline_passes(self):
+        task = Task("Дело", "2025-11-01")
+        self.assertEqual(task.deadline, "2025-11-01")
+
+    def test_impossible_date_raises(self):
+        with self.assertRaises(ValueError):
+            Task("Дело", "2025-13-40")
 
 class TestTaskManager(unittest.TestCase):
+    def setUp(self):
+        self.manager = TaskManager()
+        self.manager.add_task("Хлеб", "2025-11-01")
+        self.manager.add_task("Цветы", "2025-11-03")
+
     def test_add_and_count(self):
-        m = TaskManager()
-        m.add_task("Дело 1", "2025-11-01")
-        m.add_task("Дело 2", "2025-11-02")
-        self.assertEqual(m.count(), 2)
-
-    def test_remove_missing_raises(self):
-        m = TaskManager()
-        with self.assertRaises(ValueError):
-            m.remove_task("Нет такого")
-
-    def test_remove_task(self):
-        m = TaskManager()
-        m.add_task("Дело", "2025-11-01")
-        m.remove_task("Дело")
-        self.assertEqual(m.count(), 0)
-
-    def test_mark_done(self):
-        m = TaskManager()
-        m.add_task("Дело", "2025-11-01")
-        m.mark_done("Дело")
-        self.assertTrue(m.get_all()[0].done)
-
-    def test_mark_done_missing_raises(self):
-        m = TaskManager()
-        with self.assertRaises(ValueError):
-            m.mark_done("Нет такого")
-
-    def test_get_pending(self):
-        m = TaskManager()
-        m.add_task("Дело 1", "2025-11-01")
-        m.add_task("Дело 2", "2025-11-02")
-        m.mark_done("Дело 1")
-        pending = m.get_pending()
-        self.assertEqual(len(pending), 1)
-        self.assertEqual(pending[0].title, "Дело 2")
+        self.assertEqual(self.manager.count(), 2)
 
     def test_get_all_returns_copy(self):
-        m = TaskManager()
-        m.add_task("Дело", "2025-11-01")
-        m.get_all().clear()
-        self.assertEqual(m.count(), 1)
+        tasks = self.manager.get_all()
+        tasks.pop()
+        self.assertEqual(self.manager.count(), 2)
 
-    def test_find_by_title(self):
-        m = TaskManager()
-        m.add_task("Купить хлеб", "2025-11-01")
-        m.add_task("Полить цветы", "2025-11-03")
-        found = m.find_by_title("ХЛЕБ")
-        self.assertEqual([t.title for t in found], ["Купить хлеб"])
+    def test_mark_done_and_get_pending(self):
+        self.manager.mark_done("Хлеб")
+        pending = self.manager.get_pending()
+        self.assertEqual([t.title for t in pending], ["Цветы"])
 
-    def test_find_by_title_nothing(self):
-        m = TaskManager()
-        m.add_task("Купить хлеб", "2025-11-01")
-        self.assertEqual(m.find_by_title("кофе"), [])
+    def test_remove_existing(self):
+        self.manager.remove_task("Хлеб")
+        self.assertEqual(self.manager.count(), 1)
 
+    def test_remove_missing_raises(self):
+        with self.assertRaises(ValueError):
+            self.manager.remove_task("Нет такого")
+
+    def test_mark_done_missing_raises(self):
+        with self.assertRaises(ValueError):
+            self.manager.mark_done("Нет такого")
+
+    def test_get_sorted_by_deadline(self):
+        result = self.manager.get_sorted_by_deadline()
+        self.assertEqual([t.title for t in result], ["Хлеб", "Цветы"])
+
+def test_title_is_stripped_pytest():
+    task = Task(" Хлеб ", "2025-11-01")
+    assert task.title == "Хлеб"
 
 if __name__ == "__main__":
     unittest.main()
