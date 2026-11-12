@@ -11,6 +11,17 @@ class TestTask(unittest.TestCase):
             with self.subTest(title=repr(bad)):
                 with self.assertRaises(ValueError):
                     Task(bad, "2025-11-01")
+    def test_text_deadline_raises(self):
+        with self.assertRaises(ValueError):
+            Task("Дело", "завтра")
+
+    def test_valid_deadline_passes(self):
+        task = Task("Дело", "2025-11-01")
+        self.assertEqual(task.deadline, "2025-11-01")
+
+    def test_impossible_date_raises(self):
+        with self.assertRaises(ValueError):
+            Task("Дело", "2025-13-40")
 
     def test_mark_done(self):
         task = Task("Дело", "2025-11-01")
@@ -63,6 +74,11 @@ class TestTaskManager(unittest.TestCase):
     def test_mark_done_missing_raises(self):
         with self.assertRaises(ValueError):
             self.manager.mark_done("Нет такого")
+
+
+def test_title_is_stripped_pytest():
+        task = Task(" Хлеб ", "2025-11-01")
+        assert task.title == "Хлеб"
 
 
 if __name__ == "__main__":
