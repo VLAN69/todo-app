@@ -32,6 +32,8 @@ class TaskManager:
     def __init__(self, storage=None):
         self.storage = storage
         self.tasks: list[Task] = []
+    def get_sorted_by_deadline(self) -> list[Task]:
+        return sorted(self.tasks, key=lambda t: t.deadline)
 
     def load(self) -> None:
         if self.storage is not None:
