@@ -1,7 +1,19 @@
 from ui import ConsoleUI
 from logic import TaskManager
-
+from storage import Storage
 
 def main():
-    manager = TaskManager()
+    storage = Storage("tasks.json")
+    manager = TaskManager(storage)
+    try:
+        manager.load()
+    except ValueError as e:
+        print(f"Предупреждение: {e}")
+        print("Начинаем с пустого списка дел")
     ui = ConsoleUI(manager)
+    ui.run()
+    manager.save()
+    print("Данные сохранены")
+
+if __name__ == "__main__":
+    main()
